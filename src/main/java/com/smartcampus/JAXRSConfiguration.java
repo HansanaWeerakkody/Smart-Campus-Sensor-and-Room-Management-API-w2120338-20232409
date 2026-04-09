@@ -1,13 +1,12 @@
-package com.example.smart.campus.api;
+package com.smartcampus;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
  * Configures JAX-RS for the application.
- * @author Juneau
+ * Points to the versioned root /api/v1 as per spec.
  */
-@ApplicationPath("resources")
+@ApplicationPath("/api/v1")
 public class JAXRSConfiguration extends Application {
-    
 }
