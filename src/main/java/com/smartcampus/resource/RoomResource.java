@@ -7,8 +7,10 @@ import com.smartcampus.repository.RoomRepository;
 import com.smartcampus.repository.SensorRepository;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 @Path("/rooms")
@@ -25,9 +27,10 @@ public class RoomResource {
     }
 
     @POST
-    public Response createRoom(Room room) {
+    public Response createRoom(Room room, @Context UriInfo uriInfo) {
         roomRepo.addRoom(room);
-        return Response.status(Response.Status.CREATED).entity(room).build();
+        java.net.URI uri = uriInfo.getAbsolutePathBuilder().path(room.getId()).build();
+        return Response.created(uri).entity(room).build();
     }
 
     @GET

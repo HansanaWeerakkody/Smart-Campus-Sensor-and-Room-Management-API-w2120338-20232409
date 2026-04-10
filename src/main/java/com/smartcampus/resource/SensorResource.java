@@ -6,8 +6,10 @@ import com.smartcampus.repository.RoomRepository;
 import com.smartcampus.repository.SensorRepository;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 @Path("/sensors")
@@ -27,7 +29,7 @@ public class SensorResource {
     }
 
     @POST
-    public Response createSensor(Sensor sensor) {
+    public Response createSensor(Sensor sensor, @Context UriInfo uriInfo) {
         // Verify room exists
         if (!roomRepo.exists(sensor.getRoomId())) {
             throw new LinkedResourceNotFoundException(
@@ -39,7 +41,8 @@ public class SensorResource {
         // Also update the room's sensor list
         roomRepo.getRoom(sensor.getRoomId()).getSensorIds().add(sensor.getId());
 
-        return Response.status(Response.Status.CREATED).entity(sensor).build();
+        java.net.URI uri = uriInfo.getAbsolutePathBuilder().path(sensor.getId()).build();
+        return Response.created(uri).entity(sensor).build();
     }
 
     @GET
