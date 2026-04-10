@@ -4,7 +4,7 @@
     <groupId>com.example</groupId>
     <artifactId>Smart-Campus-API</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Smart-Campus-API-1.0-SNAPSHOT</name>
     
     <properties>
