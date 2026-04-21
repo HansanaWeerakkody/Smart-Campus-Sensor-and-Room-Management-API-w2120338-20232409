@@ -5,15 +5,18 @@ public class SensorReading {
     private long timestamp; // Epoch time (ms) when the reading was captured
     private double value; // The actual metric value recorded by the hardware
 
+    // Default constructor (required for JSON deserialization)
     public SensorReading() {
     }
 
+    // Parameterized constructor
     public SensorReading(String id, long timestamp, double value) {
         this.id = id;
         this.timestamp = timestamp;
         this.value = value;
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }

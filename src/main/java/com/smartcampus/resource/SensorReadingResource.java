@@ -9,9 +9,17 @@ import com.smartcampus.repository.SensorRepository;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Sub-resource class for managing Sensor Readings.
+ * Instantiated by the sub-resource locator in SensorResource.
+ * Handles GET and POST on /api/v1/sensors/{sensorId}/readings.
+ */
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class SensorReadingResource {
 
     private final String sensorId;
@@ -22,38 +30,47 @@ public class SensorReadingResource {
         this.sensorId = sensorId;
     }
 
+    /**
+     * GET /api/v1/sensors/{sensorId}/readings
+     * Returns the full history of readings for this sensor.
+     */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<SensorReading> getHistory() {
-        return readingRepo.getReadingsForSensor(sensorId);
+    public Response getReadings() {
+        List<SensorReading> readings = readingRepo.getReadings(sensorId);
+        return Response.ok(readings).build();
     }
 
+    /**
+     * POST /api/v1/sensors/{sensorId}/readings
+     * Appends a new reading for this sensor.
+     * Auto-generates a UUID and timestamp.
+     * Side effect: updates the parent sensor's currentValue field.
+     * Throws SensorUnavailableException (403) if sensor status is "MAINTENANCE".
+     */
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response addReading(SensorReading reading) {
-        Sensor sensor = sensorRepo.getSensor(sensorId);
-
-        // Check maintenance status
-        if ("MAINTENANCE".equalsIgnoreCase(sensor.getStatus())) {
+        // Check if the sensor is in MAINTENANCE status
+        Sensor sensor = sensorRepo.getById(sensorId);
+        if (sensor != null && "MAINTENANCE".equalsIgnoreCase(sensor.getStatus())) {
             throw new SensorUnavailableException(
-                    "Sensor " + sensorId + " is currently in MAINTENANCE and cannot accept new readings.");
+                    "Sensor '" + sensorId + "' is currently in MAINTENANCE status and cannot accept new readings. " +
+                            "Please wait until the sensor is back online.");
         }
 
-        // Set missing fields
-        if (reading.getId() == null) {
-            reading.setId(UUID.randomUUID().toString());
-        }
-        if (reading.getTimestamp() == 0) {
-            reading.setTimestamp(System.currentTimeMillis());
-        }
+        // Auto-generate ID and timestamp
+        reading.setId(UUID.randomUUID().toString());
+        reading.setTimestamp(System.currentTimeMillis());
 
-        // Add to history
+        // Store the reading
         readingRepo.addReading(sensorId, reading);
 
-        // Update parent sensor's currentValue
-        sensor.setCurrentValue(reading.getValue());
+        // Side Effect: update the parent sensor's currentValue
+        if (sensor != null) {
+            sensor.setCurrentValue(reading.getValue());
+        }
 
-        return Response.status(Response.Status.CREATED).entity(reading).build();
+        return Response.created(URI.create("/api/v1/sensors/" + sensorId + "/readings/" + reading.getId()))
+                .entity(reading)
+                .build();
     }
 }

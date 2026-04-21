@@ -8,23 +8,30 @@ import javax.ws.rs.core.Response;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Path("/")
+/**
+ * Root "Discovery" endpoint for the Smart Campus API.
+ * Provides API metadata, version info, and links to primary resource
+ * collections (HATEOAS).
+ */
+@Path("")
+@Produces(MediaType.APPLICATION_JSON)
 public class DiscoveryResource {
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getDiscovery() {
-        Map<String, Object> discovery = new LinkedHashMap<>();
-        discovery.put("version", "v1");
-        discovery.put("description", "Smart Campus Sensor & Room Management API");
-        discovery.put("admin", "Hamed Hamzeh");
+    public Response getApiInfo() {
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("title", "Smart Campus Sensor & Room Management API");
+        info.put("version", "v1");
+        info.put("description",
+                "A RESTful API for managing rooms, sensors, and sensor readings across the university campus.");
+        info.put("contact", "admin@smartcampus.university.edu");
 
-        Map<String, String> links = new LinkedHashMap<>();
-        links.put("rooms", "/api/v1/rooms");
-        links.put("sensors", "/api/v1/sensors");
+        // Hypermedia links to primary resource collections
+        Map<String, String> resources = new LinkedHashMap<>();
+        resources.put("rooms", "/api/v1/rooms");
+        resources.put("sensors", "/api/v1/sensors");
+        info.put("resources", resources);
 
-        discovery.put("links", links);
-
-        return Response.ok(discovery).build();
+        return Response.ok(info).build();
     }
 }

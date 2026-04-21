@@ -1,23 +1,27 @@
 package com.smartcampus.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Room {
     private String id; // Unique identifier, e.g., "LIB-301"
     private String name; // Human-readable name, e.g., "Library Quiet Study"
     private int capacity; // Maximum occupancy for safety regulations
-    private List<String> sensorIds = new ArrayList<>(); // Collection of IDs of sensors deployed in this room
+    private List<String> sensorIds = Collections.synchronizedList(new ArrayList<>()); // Thread-safe list
 
+    // Default constructor (required for JSON deserialization)
     public Room() {
     }
 
+    // Parameterized constructor
     public Room(String id, String name, int capacity) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -47,6 +51,6 @@ public class Room {
     }
 
     public void setSensorIds(List<String> sensorIds) {
-        this.sensorIds = sensorIds;
+        this.sensorIds = Collections.synchronizedList(sensorIds);
     }
 }
