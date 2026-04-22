@@ -13,6 +13,14 @@ The API is designed following resource-oriented RESTful principles. It offers no
 - **Global Error Handling**: Comprehensive 'ExceptionMappers' mapping specific exceptions to strict HTTP status codes (`403 Forbidden`, `409 Conflict`, `422 Unprocessable Entity`), including a robust 'GenericExceptionMapper' blocking the leakage of Java stack traces using a `500` catch-all.
 - **Traffic Logging**: Request and Response JAX-RS filters providing clean API observability.
 
+### Package Structure
+- `com.smartcampus` — Main entry point and JAX-RS configuration
+- `com.smartcampus.model` — POJOs: Room, Sensor, SensorReading
+- `com.smartcampus.repository` — Singleton in-memory data stores
+- `com.smartcampus.resource` — JAX-RS resource and sub-resource classes
+- `com.smartcampus.exception` — Custom exceptions and ExceptionMappers
+- `com.smartcampus.filter` — Request/Response logging filter
+
 ---
 
 ## API Endpoint Reference
