@@ -55,12 +55,16 @@ curl -s http://localhost:8080/api/v1/
 
 **2. Create a Room (201 Created)**
 ```bash
-curl -i -X POST -H "Content-Type: application/json" -d "{\"id\":\"LIB-301\",\"name\":\"Library Quiet Study\",\"capacity\":50}" http://localhost:8080/api/v1/rooms
+curl -i -X POST http://localhost:8080/api/v1/rooms \
+  -H "Content-Type: application/json" \
+  -d '{"id": "LIB-301", "name": "Library Study Zone 1", "capacity": 25}'
 ```
 
 **3. Register a Sensor to a Room (201 Created)**
 ```bash
-curl -i -X POST -H "Content-Type: application/json" -d "{\"id\":\"TEMP-001\",\"type\":\"Temperature\",\"status\":\"ACTIVE\",\"currentValue\":22.5,\"roomId\":\"LIB-301\"}" http://localhost:8080/api/v1/sensors
+curl -i -X POST http://localhost:8080/api/v1/sensors \
+  -H "Content-Type: application/json" \
+  -d '{"id": "TEMP-001", "type": "Temperature", "status": "ACTIVE", "currentValue": 22.5, "roomId": "LIB-301"}'
 ```
 
 **4. Attempt to Delete an Occupied Room (409 Conflict)**
@@ -70,12 +74,16 @@ curl -i -X DELETE http://localhost:8080/api/v1/rooms/LIB-301
 
 **5. Post a New Reading (Sub-Resource, 201 Created)**
 ```bash
-curl -i -X POST -H "Content-Type: application/json" -d "{\"value\":23.1}" http://localhost:8080/api/v1/sensors/TEMP-001/readings
+curl -i -X POST http://localhost:8080/api/v1/sensors/TEMP-001/readings \
+  -H "Content-Type: application/json" \
+  -d '{"value": 23.1}'
 ```
 
 **6. Create a Bad Sensor with a Non-Existent Room (422 Unprocessable Entity)**
 ```bash
-curl -i -X POST -H "Content-Type: application/json" -d "{\"id\":\"CO2-001\",\"type\":\"CO2\",\"status\":\"ACTIVE\",\"roomId\":\"FAKE-ROOM\"}" http://localhost:8080/api/v1/sensors
+curl -i -X POST http://localhost:8080/api/v1/sensors \
+  -H "Content-Type: application/json" \
+  -d '{"id": "CO2-001", "type": "CO2", "status": "ACTIVE", "roomId": "FAKE-ROOM"}'
 ```
 
 **7. Filter Sensors by Type (Query Parameter)**
@@ -85,8 +93,15 @@ curl -s "http://localhost:8080/api/v1/sensors?type=Temperature"
 
 **8. Post a Reading to a Sensor in MAINTENANCE (403 Forbidden)**
 ```bash
-curl -i -X POST -H "Content-Type: application/json" -d "{\"id\":\"MAINT-001\",\"type\":\"CO2\",\"status\":\"MAINTENANCE\",\"currentValue\":0,\"roomId\":\"LIB-301\"}" http://localhost:8080/api/v1/sensors
-curl -i -X POST -H "Content-Type: application/json" -d "{\"value\":10.5}" http://localhost:8080/api/v1/sensors/MAINT-001/readings
+# First, update or create a sensor in MAINTENANCE status
+curl -i -X POST http://localhost:8080/api/v1/sensors \
+  -H "Content-Type: application/json" \
+  -d '{"id": "MAINT-001", "type": "CO2", "status": "MAINTENANCE", "currentValue": 0, "roomId": "LIB-301"}'
+
+# Then, attempt to post a reading to it
+curl -i -X POST http://localhost:8080/api/v1/sensors/MAINT-001/readings \
+  -H "Content-Type: application/json" \
+  -d '{"value": 10.5}'
 ```
 
 ---
