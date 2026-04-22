@@ -15,6 +15,32 @@ The API is designed following resource-oriented RESTful principles. It offers no
 
 ---
 
+## API Endpoint Reference
+
+| Method | Endpoint | Description | Success Code |
+|--------|----------|-------------|--------------|
+| GET | `/api/v1` | Discovery — returns API metadata and resource links | 200 |
+| GET | `/api/v1/rooms` | Retrieve all rooms | 200 |
+| POST | `/api/v1/rooms` | Create a new room | 201 |
+| GET | `/api/v1/rooms/{roomId}` | Retrieve a specific room by ID | 200 |
+| DELETE | `/api/v1/rooms/{roomId}` | Delete a room (blocked if sensors are assigned) | 204 |
+| GET | `/api/v1/sensors` | Retrieve all sensors (supports `?type=` filter) | 200 |
+| POST | `/api/v1/sensors` | Register a new sensor (validates roomId exists) | 201 |
+| GET | `/api/v1/sensors/{sensorId}` | Retrieve a specific sensor by ID | 200 |
+| GET | `/api/v1/sensors/{sensorId}/readings` | Retrieve full reading history for a sensor | 200 |
+| POST | `/api/v1/sensors/{sensorId}/readings` | Append a new reading (updates parent sensor value) | 201 |
+
+### Error Responses
+
+| Scenario | Status Code | Exception |
+|----------|-------------|-----------|
+| Room still has sensors assigned (DELETE blocked) | 409 Conflict | `RoomNotEmptyException` |
+| Sensor references a non-existent roomId | 422 Unprocessable Entity | `LinkedResourceNotFoundException` |
+| Posting a reading to a MAINTENANCE sensor | 403 Forbidden | `SensorUnavailableException` |
+| Any unexpected runtime error | 500 Internal Server Error | `GenericExceptionMapper` |
+
+---
+
 ## Setup & Launch Instructions
 
 ### Prerequisites
