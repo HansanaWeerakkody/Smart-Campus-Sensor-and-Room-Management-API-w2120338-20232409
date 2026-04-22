@@ -23,8 +23,8 @@ The API is designed following resource-oriented RESTful principles. It offers no
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/HansanaWeerakkody/REST-api.git
-cd REST-api
+git clone https://github.com/HansanaWeerakkody/Smart-Campus-Sensor-and-Room-Management-API-w2120338-20232409.git
+cd Smart-Campus-Sensor-and-Room-Management-API-w2120338-20232409
 ```
 
 ### Step 2: Build the Project
